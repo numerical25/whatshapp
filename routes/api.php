@@ -18,3 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('user/{id}', 'UserController@show');
+
+
+//Entry Point for Query Building
+Route::get('query', 'QueryController@index');
+
+Route::post('query', 'QueryController@index');
+
+Route::put('query', 'QueryController@index');

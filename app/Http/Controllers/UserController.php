@@ -21,6 +21,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $article = app('article');
         echo "test";
         //return view('user.profile', ['user' => User::findOrFail($id)]);
     }
