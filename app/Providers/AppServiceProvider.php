@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Article;
+use App\Venue;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
@@ -37,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
         //Returns a Singleton Model for Article
         $this->app->singleton('article',function(){
             return new Article();
+        });
+        //Returns a Singleton Model for Venue
+        $this->app->singleton('venue',function(){
+            return new Venue();
         });
     }
 
