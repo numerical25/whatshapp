@@ -20,8 +20,8 @@ class CreateVenuesTable extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('zip');
-            $table->decimal('longitude',11,8);
             $table->decimal('latitude',10,8);
+            $table->decimal('longitude',11,8);
             $table->timestamps();
         });
     }

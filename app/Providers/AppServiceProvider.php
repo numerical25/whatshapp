@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Providers;
-
-use App\Article;
-use App\Venue;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Http\JsonResponse;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,11 +35,15 @@ class AppServiceProvider extends ServiceProvider
 
         //Returns a Singleton Model for Article
         $this->app->singleton('article',function(){
-            return new Article();
+            return new \App\Article();
         });
         //Returns a Singleton Model for Venue
         $this->app->singleton('venue',function(){
-            return new Venue();
+            return new \App\Venue();
+        });
+        //Returns a Singleton Model for Venue
+        $this->app->singleton('event',function(){
+            return new \App\Event();
         });
     }
 
@@ -49,18 +51,29 @@ class AppServiceProvider extends ServiceProvider
         $result = null;
         $resource = Input::get('resource');
         $id = Input::get('id');
+        $action = Input::get('action');
+        $action = $this->camelize($action);
+        $parameters = Input::all();
         $data = Input::all();
         $method = Input::method();
         $xdebug  = ini_get('xdebug.profiler_enable');
+        $error = 0;
         try {
             $model = null;
             if($resource) {
                 $model = app($resource);
             }
             if($method == 'GET') {
-                if($id) {
-                    $result = $model::find($id);
-                    return $result;
+                if($action && !method_exists($model,$action)) {
+                    throw new \Exception("No such action availible.");
+                }
+                if($action) {
+                    return $model->$action($parameters);
+                } else {
+                    if($id) {
+                        $result = $model::find($id);
+                        return $result;
+                    }
                 }
                 $result = $model::orderBy('updated_at', 'DESC')->get();
             }
@@ -77,9 +90,14 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         } catch (\Exception $e) {
-            $error = $e;
+            return new JsonResponse($e->getMessage(), 422);
         }
         return $result;
 
+    }
+
+    function camelize($input, $separator = '-')
+    {
+        return lcfirst(str_replace($separator, '', ucwords($input, $separator)));
     }
 }

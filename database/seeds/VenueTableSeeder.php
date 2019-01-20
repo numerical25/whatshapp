@@ -33,6 +33,12 @@ class VenueTableSeeder extends Seeder
                 'latitude'=>39.942690,
                 'longitude'=>-82.834220
             ],
+            [
+                'name'=>'16 Bit Arcade',
+                'state'=>'OH',
+                'latitude'=>39.957439,
+                'longitude'=>-82.994966
+            ],
         ];
         //Adds Fake Data but implements a few real locations for testing coordinates
         factory(App\Venue::class,3)->create()
