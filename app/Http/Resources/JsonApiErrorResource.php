@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class EventResource extends Resource
+class JsonApiErrorResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +14,11 @@ class EventResource extends Resource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $info = "";
+        $data =  [
+            'id'            => "500",
+            'detail' => $this->getMessage(),
+        ];
+        return $data;
     }
 }

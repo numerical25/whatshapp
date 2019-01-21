@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use DB;
+use App\Http\Resources\JsonApiCollectionResource;
 class Event extends Model
 {
     //Measures Locations Distance by Kilometers or Miles
@@ -53,7 +54,7 @@ class Event extends Model
                                  DB::raw($selectQuery)
                             ])->having("distance","<", $distance);
                         })->with('venue')->get();      
-        return new JsonResponse($events,200);
+        return new JsonApiCollectionResource($events);
     }
 
     public function venue()

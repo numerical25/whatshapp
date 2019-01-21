@@ -4,7 +4,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Http\JsonResponse;
+use App\Http\Resources\JsonApiErrorResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -57,8 +57,8 @@ class AppServiceProvider extends ServiceProvider
         $data = Input::all();
         $method = Input::method();
         $xdebug  = ini_get('xdebug.profiler_enable');
-        $error = 0;
         try {
+            throw new \Exception("Issue on the server");
             $model = null;
             if($resource) {
                 $model = app($resource);
@@ -90,7 +90,7 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         } catch (\Exception $e) {
-            return new JsonResponse($e->getMessage(), 422);
+            return new JsonApiErrorResource($e);
         }
         return $result;
 
