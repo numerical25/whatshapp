@@ -18,6 +18,8 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            //ID of Event where user checks in
+            $table->integer('event_check_in_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
