@@ -16,7 +16,7 @@ class JsonApiCollectionResource extends ResourceCollection
     {
         return [
             'links' => [],
-            'data' => JsonApiResource::collection($this->collection),
+            'data' => JsonApiCollectionItemResource::collection($this->collection),
             'meta' => []
         ];
     }

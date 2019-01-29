@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use App\Http\Resources\JsonApiErrorResource;
+use App\Http\Resources\JsonApiCollectionResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,9 +42,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('venue',function(){
             return new \App\Venue();
         });
-        //Returns a Singleton Model for Venue
+        //Returns a Singleton Model for Event
         $this->app->singleton('event',function(){
             return new \App\Event();
+        });
+        //Returns a Singleton Model for Comment
+        $this->app->singleton('comment',function(){
+            return new \App\Comment();
         });
     }
 
@@ -56,34 +61,34 @@ class AppServiceProvider extends ServiceProvider
         $parameters = Input::all();
         $data = Input::all();
         $method = Input::method();
-        $xdebug  = ini_get('xdebug.profiler_enable');
         try {
-            throw new \Exception("Issue on the server");
             $model = null;
             if($resource) {
                 $model = app($resource);
             }
             if($method == 'GET') {
-                if($action && !method_exists($model,$action)) {
-                    throw new \Exception("No such action availible.");
+                if($result = $this->processCustomAction($model, $action, $parameters)) {
+                    return $result;
                 }
-                if($action) {
-                    return $model->$action($parameters);
-                } else {
-                    if($id) {
-                        $result = $model::find($id);
-                        return $result;
-                    }
+                if($id) {
+                    $result = $model::find($id);
+                    return new JsonApiCollectionResource($result);
                 }
                 $result = $model::orderBy('updated_at', 'DESC')->get();
             }
             if($method == 'PUT') {
+                if($result = $this->processCustomAction($model, $action, $parameters)) {
+                    return $result;
+                }
                 $instance = $model::find($id);
                 if($instance->update($data)) {
                     $result = $instance;
                 }
             }
             if($method == 'POST') {
+                if($result = $this->processCustomAction($model, $action, $parameters)) {
+                    return $result;
+                }
                 $instance = new $model($data);
                 if($instance->save()) {
                     $result = $instance;
@@ -92,8 +97,17 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             return new JsonApiErrorResource($e);
         }
-        return $result;
+        return new JsonApiCollectionResource($result);
 
+    }
+
+    public function processCustomAction($model ,$action, $parameters) {
+        if($action && !method_exists($model,$action)) {
+            throw new \Exception("No such action availible.");
+        }
+        if($action) {
+            return $model->$action((object)$parameters);
+        }
     }
 
     function camelize($input, $separator = '-')

@@ -6,6 +6,9 @@ use Illuminate\Http\Resources\Json\Resource;
 
 class JsonApiErrorResource extends Resource
 {
+    static $wrap = "errors";
+
+
     /**
      * Transform the resource into an array.
      *
@@ -16,9 +19,11 @@ class JsonApiErrorResource extends Resource
     {
         $info = "";
         $data =  [
-            'id'            => "500",
-            'detail' => $this->getMessage(),
-        ];
+                [
+                    'id'            => "500",
+                    'detail' => $this->getMessage(),
+                ]
+            ];
         return $data;
     }
 }

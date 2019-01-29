@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class JsonApiResource extends Resource
+class JsonApiCollectionItemResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -25,7 +25,14 @@ class JsonApiResource extends Resource
         ];
         foreach($relations as $key=>$item) {
             $child = $this->getAttribute($key);
-            $data['relationships'][$key] = new JsonApiRelationshipResource($child);
+            if($child instanceof \Illuminate\Database\Eloquent\Collection) {
+                $data['relationships'][$key] = [];
+                foreach($child as $c) {
+                    $data['relationships'][$key][] = new JsonApiRelationshipResource($c);
+                }
+            } else {
+                $data['relationships'][$key] = new JsonApiRelationshipResource($child);
+            }
         }
         return $data;
     }

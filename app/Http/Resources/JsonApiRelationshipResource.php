@@ -15,8 +15,6 @@ class JsonApiRelationshipResource extends Resource
     public function toArray($request)
     {
         $type = strtolower(class_basename($this->resource));
-        $relations = $this->relationsToArray();
-        $relate = $this->relations;
         $data =  [
             'links' => [],
             'data' => [
